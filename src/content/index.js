@@ -3,6 +3,7 @@ let apiUrlBase;
 let tracking = '';
 let workWith = '';
 let upvotesNeeded = 2;
+let approvalsNeeded = 2;
 let colors = {
     actions: '#FF2D00',
     wait: '#FFDC00',
@@ -44,6 +45,7 @@ if (isGitlabContext) {
         tracking = result.gitlabmr.tracking === undefined ? '' : result.gitlabmr.tracking;
         workWith = result.gitlabmr.working_with === undefined ? 'upvotes' : result.gitlabmr.working_with;
         if (result.gitlabmr.upvotes !== undefined && result.gitlabmr.upvotes > 0) upvotesNeeded = result.gitlabmr.upvotes;
+        if (result.gitlabmr.approvals !== undefined && result.gitlabmr.approvals > 0) approvalsNeeded = result.gitlabmr.approvals;
         if (result.gitlabmr.colors !== undefined) colors = result.gitlabmr.colors;
 
         init(currentUrl);

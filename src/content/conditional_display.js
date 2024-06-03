@@ -17,6 +17,28 @@ function getMrIsDone(mrID, isMine, mergeRequestId) {
     xhrApproval.send();
 }
 
+function getApprovals(mrID, isMine, mergeRequestId) {
+    const xhrApproval = new XMLHttpRequest();
+    xhrApproval.onreadystatechange = function () {
+        if (xhrApproval.readyState === 4) {
+            const res = JSON.parse(xhrApproval.responseText);
+
+            if (res.approved_by.length < approvalsNeeded) {
+                console.log('====> mergeRequestStatus', mergeRequestId, mergeRequestStatus);
+                mergeRequestStatus[mergeRequestId] = {
+                    status: 'wait',
+                    message: 'Missing approves'
+                };
+                displayStatusMr(mergeRequestId, true);
+            }
+            // @debug
+            // document.getElementById(`merge_request_${mergeRequestId}`).innerHTML += `<div><pre>${JSON.stringify({approvalsNeeded, res}, null, 2)}</pre></div>`
+        }
+    };
+    xhrApproval.open('GET', apiUrlBase + '/projects/' + projectId + '/merge_requests/' + mrID + '/approvals');
+    xhrApproval.send();
+}
+
 function sortMergeRequest() {
     if (xhrGetAllMergeRequests.readyState === 4 && xhrGetAllMergeRequests.status >= 200 && xhrGetAllMergeRequests.status <= 299) {
         mrCondDisplay = JSON.parse(xhrGetAllMergeRequests.responseText);
@@ -47,13 +69,16 @@ function addOpacityIfNotTracked(mergeRequestId) {
     issue.style.opacity = '.5';
 }
 
-function displayStatusMr(mergeRequestId) {
+function displayStatusMr(mergeRequestId, log = false) {
     const issueContainer = document.getElementById(`merge_request_${mergeRequestId}`);
     if (!issueContainer) {
         return;
     }
     const issue = document.getElementById(`merge_request_${mergeRequestId}`).getElementsByClassName('issuable-info-container')[0];
     if (issue === null) return;
+    if (mergeRequestId === 6026) {
+        console.log('====> displaying',mergeRequestId, mergeRequestStatus[mergeRequestId].status);
+    }
     issue.style.borderLeft = '5px solid ' + colors[mergeRequestStatus[mergeRequestId].status];
     issue.style.paddingLeft = '10px';
     if (undefined !== mergeRequestStatus[mergeRequestId].message && '' !== mergeRequestStatus[mergeRequestId].message) {
@@ -108,17 +133,18 @@ function handleMyMrCall(id, isDone, mergeRequestId) {
 
         allDiscussions = JSON.parse(xhrCondDisplay[mergeRequestId].responseText);
         Object.keys(allDiscussions).forEach(discussionKey => {
-            if (allDiscussions[discussionKey].notes[0].resolvable) {
-                status.push(...handleDiscussionMyMr(id, discussionKey));
+            if (allDiscussions[discussionKey].notes[0].resolvable && !allDiscussions[discussionKey].notes[0].resolved) {
+                const statusOfThisDiscussion = handleDiscussionMyMr(id, discussionKey)
+                status.push(...statusOfThisDiscussion);
             }
         });
 
         if (status.length === 0) {
-            status.push('wait');
+            status.push('done');
         }
 
         mergeRequestStatus[mergeRequestId] = {
-            status: status.indexOf('actions') !== -1 || isDone ? 'actions' : 'wait',
+            status: status.indexOf('actions') !== -1 || isDone ? 'actions' : (status.indexOf('wait') !== -1 ? 'wait' : 'done'),
             message: isDone && !status.includes('not-resolved') ? 'Can be merged!' : ''
         };
         displayStatusMr(mergeRequestId);

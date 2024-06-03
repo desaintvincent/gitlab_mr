@@ -78,11 +78,13 @@ label, input[type="text"], .button{
 	font-weight: 500;
 }
 
-#gitlab-mr .gitlab-mr__settings__container .gitlab-mr__settings__upvotes__container{
+#gitlab-mr .gitlab-mr__settings__container .gitlab-mr__settings__upvotes__container,
+#gitlab-mr .gitlab-mr__settings__container .gitlab-mr__settings__approvals__container{
 	display: none;
 	align-items: center;
 }
 
-#gitlab-mr .gitlab-mr__settings__container .gitlab-mr__settings__upvotes__container label{
+#gitlab-mr .gitlab-mr__settings__container .gitlab-mr__settings__upvotes__container label,
+#gitlab-mr .gitlab-mr__settings__container .gitlab-mr__settings__approvals__container label{
 	margin-right: 1rem;
 }

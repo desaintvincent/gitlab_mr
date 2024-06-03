@@ -46,6 +46,10 @@ function getMergeRequestMyMR(projectID, mrId) {
             handelAllMr(`${projectID}-${mrId}`, projectID);
 
             getUpvoters(mergeRequest.iid, mergeRequest.author.username === username, mergeRequest.upvotes >= upvotesNeeded, projectID, mergeRequest.id);
+            if (workWith === 'approvals') {
+                getApprovals(mergeRequest.iid, mergeRequest.author.username === username, mergeRequest.id);
+            }
+
         }
     };
     xhrMyMergeRequests[`${projectID}-${mrId}`].open('GET', `${apiUrlBase}/projects/${projectID}/merge_requests?iids[]=${mrId}`);

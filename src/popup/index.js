@@ -7,6 +7,7 @@ chrome.storage.sync.get(['gitlabmr'], function (result) {
     let gitlabUrl = '';
     let workWith = 'upvotes';
     let upvotes = 2;
+    let approvals = 2;
     let tracking = '';
     let colors = {
         actions: '#FF2D00',
@@ -20,6 +21,7 @@ chrome.storage.sync.get(['gitlabmr'], function (result) {
         if (result.gitlabmr.url !== undefined) gitlabUrl = result.gitlabmr.url;
         if (result.gitlabmr.working_with !== undefined) workWith = result.gitlabmr.working_with;
         if (result.gitlabmr.upvotes !== undefined) upvotes = result.gitlabmr.upvotes;
+        if (result.gitlabmr.approvals !== undefined) approvals = result.gitlabmr.approvals;
         if (result.gitlabmr.tracking !== undefined) tracking = result.gitlabmr.tracking;
         if (result.gitlabmr.colors !== undefined) colors = result.gitlabmr.colors;
     }
@@ -35,6 +37,7 @@ chrome.storage.sync.get(['gitlabmr'], function (result) {
         document.getElementById('gitlab-mr__upvotes').dispatchEvent(event);
     }
     document.getElementById('gitlab-mr__settings__upvotes').value = upvotes;
+    document.getElementById('gitlab-mr__settings__approvals').value = approvals;
     document.getElementById('gitlab-mr__track__mr').value = tracking;
     document.getElementById('gitlab-mr__color_action').value = colors.actions;
     document.getElementById('gitlab-mr__color_wait').value = colors.wait;
@@ -65,6 +68,7 @@ function handleChangedOptions() {
 
 function changeStatusWorkWith() {
     document.querySelector('.gitlab-mr__settings__upvotes__container').style.display = this.value === 'upvotes' ? 'flex' : 'none';
+    document.querySelector('.gitlab-mr__settings__approvals__container').style.display = this.value === 'approvals' ? 'flex' : 'none';
 }
 
 function saveOptions() {
@@ -74,6 +78,7 @@ function saveOptions() {
         url: document.getElementById('gitlab-mr__settings__url').value,
         working_with: workWith === undefined ? 'upvotes' : workWith,
         upvotes: document.getElementById('gitlab-mr__settings__upvotes').value,
+        approvals: document.getElementById('gitlab-mr__settings__approvals').value,
         tracking: document.getElementById('gitlab-mr__track__mr').value,
         colors: {
             actions: document.getElementById('gitlab-mr__color_action').value,

@@ -16,7 +16,7 @@ function handleDiscussionMyMr(id, discussionKey) {
             arrayToReturn.push('actions');
         }
     } else {
-        arrayToReturn.push('wait');
+        arrayToReturn.push('done');
     }
 
     return arrayToReturn;
